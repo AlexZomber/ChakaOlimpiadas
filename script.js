@@ -25,7 +25,7 @@ async function crearGrafica() {
     const ctx = document.getElementById('grafica').getContext('2d');
     
     const miGrafica = new Chart(ctx, {
-        type: 'horizontalBar',  // Gráfico de barras horizontales
+        type: 'bar',  // Tipo de gráfico de barras
         data: {
             labels: labelsOrdenadas,
             datasets: [{
@@ -35,6 +35,9 @@ async function crearGrafica() {
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
             }]
+        },
+        options: {
+            indexAxis: 'y',  // Esto asegura que las barras sean horizontales
         }
     });
 
