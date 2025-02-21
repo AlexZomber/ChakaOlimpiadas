@@ -1,8 +1,7 @@
 async function cargarDatos() {
     try {
-        const response = await fetch('data.json'); 
+        const response = await fetch('data.json', { cache: "no-store" }); // Evita datos en caché
         const data = await response.json();
-
         return data;
     } catch (error) {
         console.error('Error al cargar los datos:', error);
@@ -36,6 +35,7 @@ async function crearGrafica() {
             miGrafica.data.labels = nuevosDatos.labels;
             miGrafica.data.datasets[0].data = nuevosDatos.values;
             miGrafica.update();
+            console.log("Datos actualizados:", nuevosDatos); // Verifica en consola
         }
     }, 5000); // Actualiza cada 5 segundos
 }
