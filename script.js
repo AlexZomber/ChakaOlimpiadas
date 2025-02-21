@@ -3,7 +3,7 @@ async function cargarDatos() {
         const response = await fetch('data.json'); 
         const data = await response.json();
 
-        return data.datos; // Ahora accedemos a "datos"
+        return data.datos; // Se accede correctamente a los valores dentro del JSON
     } catch (error) {
         console.error('Error al cargar los datos:', error);
         return null;
@@ -14,23 +14,22 @@ async function crearGrafica() {
     const datos = await cargarDatos();
     if (!datos) return;
 
-    // Convertir objeto en listas para Chart.js
-    const etiquetas = Object.keys(datos);
-    const valores = Object.values(datos);
+    // Convertir los datos en un array ordenado de mayor a menor
+    const datosOrdenados = Object.entries(datos)
+        .sort((a, b) => b[1] - a[1]); // Ordena por valor numérico descendente
 
-    // Ordenar de mayor a menor
-    const ordenados = etiquetas.map((etiqueta, i) => ({ etiqueta, valor: valores[i] }))
-                              .sort((a, b) => b.valor - a.valor);
-    
+    const labels = datosOrdenados.map(item => item[0]); // Meses
+    const values = datosOrdenados.map(item => item[1]); // Valores
+
     const ctx = document.getElementById('grafica').getContext('2d');
-
+    
     const miGrafica = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ordenados.map(item => item.etiqueta),
+            labels: labels,
             datasets: [{
                 label: 'Valores',
-                data: ordenados.map(item => item.valor),
+                data: values,
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -44,17 +43,14 @@ async function crearGrafica() {
     setInterval(async () => {
         const nuevosDatos = await cargarDatos();
         if (nuevosDatos) {
-            const etiquetasActualizadas = Object.keys(nuevosDatos);
-            const valoresActualizados = Object.values(nuevosDatos);
+            const datosActualizados = Object.entries(nuevosDatos)
+                .sort((a, b) => b[1] - a[1]); 
 
-            const ordenadosNuevos = etiquetasActualizadas.map((etiqueta, i) => ({ etiqueta, valor: valoresActualizados[i] }))
-                                                         .sort((a, b) => b.valor - a.valor);
-
-            miGrafica.data.labels = ordenadosNuevos.map(item => item.etiqueta);
-            miGrafica.data.datasets[0].data = ordenadosNuevos.map(item => item.valor);
+            miGrafica.data.labels = datosActualizados.map(item => item[0]);
+            miGrafica.data.datasets[0].data = datosActualizados.map(item => item[1]);
             miGrafica.update();
         }
-    }, 5000);
+    }, 5000); // Actualiza cada 5 segundos
 }
 
 crearGrafica();
