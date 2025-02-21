@@ -38,6 +38,15 @@ async function crearGrafica() {
         },
         options: {
             indexAxis: 'y',  // Esto asegura que las barras sean horizontales
+            responsive: true, // Asegura que la gráfica sea adaptable a diferentes tamaños de pantalla
+            scales: {
+                x: {
+                    beginAtZero: true  // Esto asegura que el eje X comienza en cero
+                },
+                y: {
+                    beginAtZero: true  // Esto asegura que el eje Y comienza en cero
+                }
+            }
         }
     });
 
