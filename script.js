@@ -3,7 +3,7 @@ async function cargarDatos() {
         const response = await fetch('data.json'); 
         const data = await response.json();
 
-        return data.datos; // Se accede correctamente a los valores dentro del JSON
+        return data.datos; // Accede correctamente a la estructura del JSON
     } catch (error) {
         console.error('Error al cargar los datos:', error);
         return null;
@@ -14,12 +14,9 @@ async function crearGrafica() {
     const datos = await cargarDatos();
     if (!datos) return;
 
-    // Convertir los datos en un array ordenado de mayor a menor
-    const datosOrdenados = Object.entries(datos)
-        .sort((a, b) => b[1] - a[1]); // Ordena por valor numérico descendente
-
-    const labels = datosOrdenados.map(item => item[0]); // Meses
-    const values = datosOrdenados.map(item => item[1]); // Valores
+    // Extrae los datos en listas separadas
+    const labels = Object.keys(datos);
+    const values = Object.values(datos);
 
     const ctx = document.getElementById('grafica').getContext('2d');
     
@@ -43,11 +40,8 @@ async function crearGrafica() {
     setInterval(async () => {
         const nuevosDatos = await cargarDatos();
         if (nuevosDatos) {
-            const datosActualizados = Object.entries(nuevosDatos)
-                .sort((a, b) => b[1] - a[1]); 
-
-            miGrafica.data.labels = datosActualizados.map(item => item[0]);
-            miGrafica.data.datasets[0].data = datosActualizados.map(item => item[1]);
+            miGrafica.data.labels = Object.keys(nuevosDatos);
+            miGrafica.data.datasets[0].data = Object.values(nuevosDatos);
             miGrafica.update();
         }
     }, 5000); // Actualiza cada 5 segundos
