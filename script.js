@@ -1,62 +1,69 @@
-// Configuración de Firebase
+// Inicializa Firebase
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",  // Obtén tu API Key desde la consola de Firebase
-  authDomain: "chakaolimpiadas.firebaseapp.com",  // El dominio de tu proyecto
-  databaseURL: "https://chakaolimpiadas-default-rtdb.firebaseio.com/",  // La URL de tu base de datos
-  projectId: "chakaolimpiadas",  // El ID de tu proyecto
-  storageBucket: "chakaolimpiadas.appspot.com",  
-  messagingSenderId: "TU_SENDER_ID",  
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyDJkeGz-QYkUwC-w97l8y8qNhFq_JtqFcQ",
+  authDomain: "chakaolimpiadas.firebaseapp.com",
+  databaseURL: "https://chakaolimpiadas-default-rtdb.firebaseio.com",
+  projectId: "chakaolimpiadas",
+  storageBucket: "chakaolimpiadas.appspot.com",
+  messagingSenderId: "953314053942",
+  appId: "1:953314053942:web:7b5d8c4244e95dbb2a929e"
 };
 
-// Inicializa Firebase
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// Cargar datos desde Firebase
+// Función para obtener los datos desde Firebase
 async function cargarDatos() {
-    try {
-        const snapshot = await database.ref('datos').once('value');
-        const data = snapshot.val();  // Obtiene los datos como objeto
-        return data;
-    } catch (error) {
-        console.error('Error al cargar los datos:', error);
-        return null;
-    }
+  try {
+    const snapshot = await database.ref('datos').once('value'); // Obtén los datos desde la referencia 'datos'
+    const data = snapshot.val(); // Extrae los valores del snapshot
+    return data;
+  } catch (error) {
+    console.error('Error al cargar los datos:', error);
+    return null;
+  }
 }
 
+// Función para crear y actualizar la gráfica
 async function crearGrafica() {
-    const datos = await cargarDatos();
-    if (!datos) return;
+  const datos = await cargarDatos();
+  if (!datos) return;
 
-    const ctx = document.getElementById('grafica').getContext('2d');
-
-    const miGrafica = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(datos),  // Los meses como etiquetas
-            datasets: [{
-                label: 'Valores',
-                data: Object.values(datos),  // Los valores de los meses
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: 'y' // Cambiar la dirección de las barras a horizontal
+  const ctx = document.getElementById('grafica').getContext('2d');
+  
+  // Configuración de la gráfica
+  const miGrafica = new Chart(ctx, {
+    type: 'bar',  // Tipo de gráfica: 'bar' para barras
+    data: {
+      labels: Object.keys(datos),  // Extrae las claves (meses)
+      datasets: [{
+        label: 'Ventas',
+        data: Object.values(datos),  // Extrae los valores (números de ventas)
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',  // Establece la orientación horizontal para las barras
+      responsive: true, // Hacerla responsiva
+      scales: {
+        x: {
+          beginAtZero: true
         }
-    });
+      }
+    }
+  });
 
-    // Escuchar cambios en la base de datos y actualizar la gráfica en tiempo real
-    database.ref('datos').on('value', snapshot => {
-        const nuevosDatos = snapshot.val();
-        if (nuevosDatos) {
-            miGrafica.data.labels = Object.keys(nuevosDatos);
-            miGrafica.data.datasets[0].data = Object.values(nuevosDatos);
-            miGrafica.update();
-        }
-    });
+  // Actualiza la gráfica cada 5 segundos
+  setInterval(async () => {
+    const nuevosDatos = await cargarDatos();
+    if (nuevosDatos) {
+      miGrafica.data.labels = Object.keys(nuevosDatos);
+      miGrafica.data.datasets[0].data = Object.values(nuevosDatos);
+      miGrafica.update();
+    }
+  }, 5000); // Actualiza cada 5 segundos
 }
 
 crearGrafica();
