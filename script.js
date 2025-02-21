@@ -1,6 +1,6 @@
 async function cargarDatos() {
     try {
-        const response = await fetch('data.json', { cache: "no-store" }); // Evita datos en caché
+        const response = await fetch('data.json'); 
         const data = await response.json();
         return data;
     } catch (error) {
@@ -13,15 +13,24 @@ async function crearGrafica() {
     const datos = await cargarDatos();
     if (!datos) return;
 
+    // Ordenar los datos de mayor a menor
+    const datosOrdenados = datos.values
+        .map((value, index) => ({ value, label: datos.labels[index] }))
+        .sort((a, b) => b.value - a.value);
+
+    // Actualizar las etiquetas y los valores ordenados
+    const labelsOrdenadas = datosOrdenados.map(item => item.label);
+    const valuesOrdenados = datosOrdenados.map(item => item.value);
+
     const ctx = document.getElementById('grafica').getContext('2d');
     
     const miGrafica = new Chart(ctx, {
-        type: 'bar',
+        type: 'horizontalBar',  // Gráfico de barras horizontales
         data: {
-            labels: datos.labels,
+            labels: labelsOrdenadas,
             datasets: [{
                 label: 'Ventas',
-                data: datos.values,
+                data: valuesOrdenados,
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -32,10 +41,14 @@ async function crearGrafica() {
     setInterval(async () => {
         const nuevosDatos = await cargarDatos();
         if (nuevosDatos) {
-            miGrafica.data.labels = nuevosDatos.labels;
-            miGrafica.data.datasets[0].data = nuevosDatos.values;
+            // Repetir el mismo proceso de ordenamiento
+            const nuevosDatosOrdenados = nuevosDatos.values
+                .map((value, index) => ({ value, label: nuevosDatos.labels[index] }))
+                .sort((a, b) => b.value - a.value);
+
+            miGrafica.data.labels = nuevosDatosOrdenados.map(item => item.label);
+            miGrafica.data.datasets[0].data = nuevosDatosOrdenados.map(item => item.value);
             miGrafica.update();
-            console.log("Datos actualizados:", nuevosDatos); // Verifica en consola
         }
     }, 5000); // Actualiza cada 5 segundos
 }
