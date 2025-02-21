@@ -5,10 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gráfica en Tiempo Real</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+            margin-top: 20px;
+        }
+        canvas {
+            margin-top: 30px;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Logo" style="width: 150px;">
+        <img src="logo.png" alt="Logo">
     </header>
     <h2>Gráfica de Barras en Tiempo Real</h2>
     <canvas id="grafica"></canvas>
