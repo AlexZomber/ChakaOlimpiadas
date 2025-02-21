@@ -44,7 +44,7 @@ async function crearGrafica() {
             miGrafica.data.datasets[0].data = Object.values(nuevosDatos);
             miGrafica.update();
         }
-    }, 5000); // Actualiza cada 5 segundos
+    }, 2000); // Actualiza cada 5 segundos
 }
 
 crearGrafica();
