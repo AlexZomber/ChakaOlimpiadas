@@ -1,4 +1,8 @@
 {
-    "labels": ["Enero", "Febrero", "Marzo", "Abril", "mayo"],
-    "values": [10, 20, 15, 30]
+    "datos": {
+        "Enero": 2,
+        "Febrero": 3,
+        "Marzo": 0,
+        "Abril": 1
+    }
 }
